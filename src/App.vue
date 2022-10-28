@@ -10,7 +10,7 @@
           @keypress="fetchWeather"
         />
       </div>
-
+ // you dont have to check the typeof, just check the falsiness of the property like !weather.main 
       <div class="weather-wrap" v-if="typeof weather.main != 'undefined'">
         <div class="location-box">
           <div class="location">{{ weather.name }}, {{ weather.sys.country }}</div>
@@ -31,6 +31,7 @@ export default {
         name: 'app',
         data() {
             return {
+            // your api key should be stored in a .env file and then injected through your app with PROCESS.ENV.XXXXX
                 api_key: 'a80f1b8e42cd5e6ed3ebabfd8027c40f',
                 url_base: 'https://api.openweathermap.org/data/2.5/',
                 query: '',
@@ -38,17 +39,18 @@ export default {
             }
         },
         methods: {
-            fetchWeather(e) {
+            async fetchWeather(e) {
+            // you can do async / await in order to simplify your method, avoid chaining .then unless its mandatory
                 if (e.key == "Enter") {
-                    fetch(`${this.url_base}weather?q=${this.query}&units=metric&APPID=${this.api_key}`)
-                        .then(res => {
-                            return res.json();
-                        }).then(this.setResults);
+                const response = await fetch(`${this.url_base}weather?q=${this.query}&units=metric&APPID=${this.api_key}`)
+                const jsonResponse = await response.json();
+                return jsonResponse;
                 }
             },
             setResults(results) {
                 this.weather = results;
             },
+            // weird method, you dont have to do this, you can use a date.js or something like this 
             dateBuilder() {
                 let d = new Date();
                 let months = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
